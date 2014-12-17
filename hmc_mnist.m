@@ -8,21 +8,30 @@ addpath('mnist');
 [X,y] = loadadigit('train',1);
 X = reshape(X, [28 28]); % 5
 
-q = [14 14]';
-epsilon = 0.2;
-L = 25;
+q = [1 1]';
+epsilon = 1;
+L = 1;
 
 %% Define U and grad_U
-%filter = fspecial('gaussian', 7, 5);
-%Xf = imfilter(X, filter, 'replicate');
+X1 = size(X);
+for i = 1 : size(X,1)
+    for j = 1 : size(X,2)
+        e = 0;
+        for m = 1 : size(X,1)
+            for n = 1 : size(X,2)
+                r = sqrt((m-i)^2+(n-j)^2);
+                if r ~= 0
+                    %e = e + [(m-i),(n-j)]*X(m,n)/(r^2);
+                    e = e + X(m,n)/r;
+                end
+            end
+        end
+        X1(i,j) = e;
+    end
+end
 
-%X = X + 200 * fspecial('gaussian', 28, 8);
-
-X(1,:) = 0; X(end,:) = 0;
-X(:,1) = 0; X(:,end) = 0;
-
-Z = sum(sum(exp(-X.^2/2)));
-Uf = X.^2/2 - log(Z);
+Z = sum(sum(X1));
+Uf = X1 / Z;
 
 U = @(q) Uf(round(max(min(q(1),28),1)),...
             round(max(min(q(2),28),1)));
@@ -34,7 +43,7 @@ grad_U = @(q)...
         round(max(min(q(2),28),1)))];
 
 tr = [q'];
-for i = 1 : 100
+for i = 1 : 1500
     q = hmc(U, grad_U, epsilon, L, q);
     q = [round(max(min(q(1),28),1)),...
         round(max(min(q(2),28),1))]';
@@ -49,11 +58,12 @@ v = tr(2:end,2)-tr(1:end-1,2);
 close all;
 f = figure(1);
 
-imshow(1-X);
+imshow(1-X/2);
 set(f, 'Position', [100 300 500 500]);
 hold on;
 
 quiver(x,y,u,v,0);
+%quiver(px,py);
 
 xlabel('x', 'FontSize', 16);
 ylabel('y', 'FontSize', 16);
