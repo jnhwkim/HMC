@@ -66,11 +66,15 @@ function [ H ] = hmc( U, grad_U, epsilon, L, current_q )
 
   % Accept or reject the state at end of trajectory, returning either
   % the position at the end of the trajectory or the initial position
+  
+  % fprintf('U0: %.3f, U1: %.3f, K0: %.3f, K1: %.3f\n', current_U,proposed_U,current_K,proposed_K);
 
-  if rand(1,1) < min(1, exp(current_U-proposed_U+current_K-proposed_K))
+  if rand(1) < min(1, exp(current_U-proposed_U+current_K-proposed_K))
     H = q;  % accept
-    fprintf('accept: %.4f\n', min(1, exp(current_U-proposed_U+current_K-proposed_K)));
+    % fprintf('accept: %.4f\n', min(1, exp(current_U-proposed_U+current_K-proposed_K)));
+    % fprintf('U0: %.3f, U1: %.3f, K0: %.3f, K1: %.3f\n', current_U,proposed_U,current_K,proposed_K);
   else
     H = current_q;  % reject
+    % fprintf('reject: %.4f\n', min(1, exp(current_U-proposed_U+current_K-proposed_K)));
   end
 end
