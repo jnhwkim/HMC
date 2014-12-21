@@ -56,7 +56,7 @@ function [ H ] = hmc( U, grad_U, epsilon, L, current_q )
   p = p - epsilon * grad_U(q) / 2;
 
   % Negate momentum at end of trajectory to make the proposal symmetric
-  p = -p;
+  p = p; % nope
 
   % Evaluate potential and kinetic energies at start and end of trajectory
   current_U = U(current_q);

@@ -1,6 +1,6 @@
 function images = loadMNISTImages(filename)
 %loadMNISTImages returns a 28x28x[number of MNIST images] matrix containing
-%the raw MNIST images
+%the raw MNIST images, whose range of value is [0 1].
 
 fp = fopen(filename, 'rb');
 assert(fp ~= -1, ['Could not open ', filename, '']);

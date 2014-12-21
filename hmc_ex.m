@@ -24,6 +24,7 @@ x = tr(1:end-1,1); y = tr(1:end-1,2);
 u = tr(2:end,1)-tr(1:end-1,1); 
 v = tr(2:end,2)-tr(1:end-1,2);
 
+close all;
 f = figure(1);
 set(f, 'Position', [100 300 500 500]);
 quiver(x,y,u,v,0);
