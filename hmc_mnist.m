@@ -1,5 +1,7 @@
 %% Example for two-dimensional problem
 
+close all;
+
 set(0,'DefaultAxesFontName', 'Palatino')
 set(0,'DefaultTextFontname', 'Palatino')
 
@@ -12,7 +14,6 @@ tic;
 [x,y,u,v,X1,px,py] = hmc_mnist_sampler(X);
 toc;
 
-close all;
 f1 = figure(1);
 
 imshow(1-X/2, 'InitialMagnification','fit');
