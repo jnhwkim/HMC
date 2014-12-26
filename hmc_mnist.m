@@ -1,4 +1,6 @@
-%% Example for two-dimensional problem
+%% Na?ve approach to sample MNIST digits using Hamilton Monte Carlo.
+%% Jin-Hwa Kim (jnhwkim@snu.ac.kr)
+%% Updated on Dec 26 2014
 
 close all;
 
@@ -11,7 +13,7 @@ addpath('mnist');
 X = reshape(X, [28 28]);
 
 tic;
-[x,y,u,v,X1,px,py] = hmc_mnist_sampler(X);
+[x,y,u,v,X1,px,py] = hmc_mnist_sampler(X, [0;0], 100);
 toc;
 
 f1 = figure(1);

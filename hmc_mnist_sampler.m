@@ -1,4 +1,4 @@
-function [ x,y,u,v,X1,px,py ] = hmc_mnist_sampler( X )
+function [ x,y,u,v,X1,px,py ] = hmc_mnist_sampler( X, q, samples )
 %HMC_MNIST_SAMPLER Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -7,21 +7,23 @@ epsilon = .25;
 L = 15;
 K = .5;
 InfD = .1;
-NUM_SAMPLES = 10;
 
 I = reshape(X, [28 28]);
 
 %% Initialize first gaze
-q = [0 0]';
-f_size = 7;
-f_mask = fspecial('gaussian', [f_size f_size], 0.5) - ...
-         ones(f_size,f_size) / f_size^2;
-X0 = conv2(I, f_mask);
-%f0 = figure(4);
-%set(f0, 'Position', [300 0 300 300]);
-%imshow(X0*30, jet(36), 'InitialMagnification','fit');
-[i, j] = find(X0==max(max(X0)));
-q = [i, j]';
+if ~isequal(size(q), [2,1])
+    if strcmp(q, 'max')
+        f_size = 7;
+        f_mask = fspecial('gaussian', [f_size f_size], 0.5) - ...
+                 ones(f_size,f_size) / f_size^2;
+        X0 = conv2(I, f_mask);
+        %f0 = figure(4);
+        %set(f0, 'Position', [300 0 300 300]);
+        %imshow(X0*30, jet(36), 'InitialMagnification','fit');
+        [i, j] = find(X0==max(max(X0)));
+        q = [i, j]';
+    end
+end
 
 %% Define U and grad_U
 X1 = size(I);
@@ -52,9 +54,9 @@ grad_U = @(q)...
         round(max(min(q(1),28),1)))];
 
 tr = [q'];
-for i = 1 : NUM_SAMPLES
+for i = 1 : samples
     % restart at half to avoid localization
-    if i == round(NUM_SAMPLES / 2)
+    if i == round(samples / 2)
         q = [round(rand(1)*28) round(rand(1)*28)]';
     end
     q = hmc(U, grad_U, epsilon, L, q);
