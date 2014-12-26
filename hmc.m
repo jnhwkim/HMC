@@ -3,7 +3,7 @@ function [ H ] = hmc( U, grad_U, epsilon, L, current_q )
 %
 % Radford M. Neal, 2010.
 %
-% Ported to Matlab by
+% Ported to Matlab and modified by
 % Jin-Hwa Kim, 2014. 
 %
 % Below description was originally written by Neal.
@@ -35,7 +35,7 @@ function [ H ] = hmc( U, grad_U, epsilon, L, current_q )
 % are available from my web page, http://www.cs.utoronto.ca/~radford/
 
   q = current_q;
-  p = normrnd(0,1,[length(q),1]);  % independent standard normal variates
+  p = rand(length(q),1);  % independent uniform distribution
   current_p = p;
 
   % Make a half step for momentum at the beginning
@@ -60,9 +60,9 @@ function [ H ] = hmc( U, grad_U, epsilon, L, current_q )
 
   % Evaluate potential and kinetic energies at start and end of trajectory
   current_U = U(current_q);
-  current_K = sum(current_p.^2) / 2;
+  current_K = 0;
   proposed_U = U(q);
-  proposed_K = sum(p.^2) / 2;
+  proposed_K = 0;
 
   % Accept or reject the state at end of trajectory, returning either
   % the position at the end of the trajectory or the initial position

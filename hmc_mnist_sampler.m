@@ -16,12 +16,12 @@ if ~isequal(size(q), [2,1])
         f_size = 7;
         f_mask = fspecial('gaussian', [f_size f_size], 0.5) - ...
                  ones(f_size,f_size) / f_size^2;
-        X0 = conv2(I, f_mask);
+        X0 = conv2(I, f_mask, 'same')
         %f0 = figure(4);
         %set(f0, 'Position', [300 0 300 300]);
         %imshow(X0*30, jet(36), 'InitialMagnification','fit');
-        [i, j] = find(X0==max(max(X0)));
-        q = [i, j]';
+        [i, j] = find(X0==max(max(X0)))
+        q = [j, i]'
     end
 end
 

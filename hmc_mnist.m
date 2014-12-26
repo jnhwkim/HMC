@@ -9,36 +9,21 @@ set(0,'DefaultTextFontname', 'Palatino')
 
 %% Load a sample digit
 addpath('mnist');
-[X,y] = loadadigit('train',1);%round(rand(1)*100+1));
+[X,y] = loadadigit('train',7);%round(rand(1)*100+1));
 X = reshape(X, [28 28]);
 
+%% Init with Zero.
 tic;
-[x,y,u,v,X1,px,py] = hmc_mnist_sampler(X, [0;0], 100);
+[x,y,u,v,X1,px,py] = hmc_mnist_sampler(X, [0;0], 30);
 toc;
 
-f1 = figure(1);
+%% Display the result as 3 figures.
+[f1,f2,f3] = hmc_mnist_disp(X,x,y,u,v,X1,px,py,0);
 
-imshow(1-X/2, 'InitialMagnification','fit');
-set(f1, 'Position', [0 0 300 300]);
-hold on;
-quiver(x,y,u,v,0);
+%% Modified approach
+tic;
+[x,y,u,v,X1,px,py] = hmc_mnist_sampler(X, 'max', 30);
+toc;
 
-xlabel('x', 'FontSize', 16);
-ylabel('y', 'FontSize', 16);
-set(gca, 'FontSize', 13);
-
-% f2 = figure(2);
-% set(f2, 'Position', [0 300 300 300]);
-% scatter(tr(:,1),28-tr(:,2));
-% axis([1 28 1 28]);
-
-f2 = figure(2);
-set(f2, 'Position', [0 300 300 300]);
-imshow(X1, jet(18), 'InitialMagnification','fit');
-% scatter(tr(:,1),28-tr(:,2));
-% axis([1 28 1 28]);
-
-f3 = figure(3);
-set(f3, 'Position', [0 600 300 300]);
-quiver(flipud(px),flipud(-py));
-axis([1 28 1 28]);
+%% Display the result as 3 figures.
+[f4,f5,f6] = hmc_mnist_disp(X,x,y,u,v,X1,px,py,300);
