@@ -9,21 +9,22 @@ set(0,'DefaultTextFontname', 'Palatino')
 
 %% Load a sample digit
 addpath('mnist');
-[X,y] = loadadigit('train',7);%round(rand(1)*100+1));
+[X,y] = loadadigit('train',3);%round(rand(1)*100+1));
 X = reshape(X, [28 28]);
+samples = 14;
 
 %% Init with Zero.
 tic;
-[x,y,u,v,X1,px,py] = hmc_mnist_sampler(X, [0;0], 30);
+[x,y,u,v,Uf,px,py] = hmc_mnist_sampler(X, [0;0], samples, false);
 toc;
 
 %% Display the result as 3 figures.
-[f1,f2,f3] = hmc_mnist_disp(X,x,y,u,v,X1,px,py,0);
+[f1,f2,f3] = hmc_mnist_disp(X,x,y,u,v,-Uf,px,py,0);
 
 %% Modified approach
 tic;
-[x,y,u,v,X1,px,py] = hmc_mnist_sampler(X, 'max', 30);
+[x,y,u,v,Uf,px,py] = hmc_mnist_sampler(X, 'max', samples, true);
 toc;
 
 %% Display the result as 3 figures.
-[f4,f5,f6] = hmc_mnist_disp(X,x,y,u,v,X1,px,py,300);
+[f4,f5,f6] = hmc_mnist_disp(X,x,y,u,v,-Uf,px,py,300);
