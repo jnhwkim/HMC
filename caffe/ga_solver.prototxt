@@ -6,8 +6,6 @@
 # (specify NetParameters directly in the solver, specify multiple test nets)
 # if desired.
 #
-# Carry out testing every 500 training iterations.
-test_interval: 500
 # The base learning rate, momentum and the weight decay of the network.
 base_lr: 0.01
 momentum: 0.9
@@ -18,15 +16,17 @@ gamma: 0.0001
 power: 0.75
 # Display every 100 iterations
 display: 1000
+# Carry out testing every 500 training iterations.
+test_interval: 1000
 # The maximum number of iterations
 max_iter: 1000000
 # snapshot intermediate results
 snapshot: 10000
-snapshot_prefix: ".ga"
+snapshot_prefix: ".4s_ga"
 # Set a random_seed for repeatable results.
 # (For results that vary due to random initialization, comment out the below
 # line, or set to a negative integer -- e.g. "random_seed: -1")
-random_seed: 99991701
+random_seed: 1701
 # solver mode: CPU or GPU
 solver_mode: GPU
 
@@ -35,7 +35,7 @@ solver_mode: GPU
 # test_iter specifies how many forward passes the test should carry out.
 # In the case of MNIST, we have test batch size 100 and 100 test iterations,
 # covering the full 10,000 testing images.
-test_iter: 100
+test_iter: 400
 test_state: { stage: "test-on-test-set" }
 
 # The net protocol buffer definition
@@ -47,7 +47,7 @@ net_param {
     top: "data"
     top: "label"
     data_param {
-      source: "S_tr_ldb"
+      source: "4S_tr_ldb"
       backend: LEVELDB
       batch_size: 60
     }
@@ -62,7 +62,7 @@ net_param {
     top: "data"
     top: "label"
     data_param {
-      source: "S_te_ldb"
+      source: "4S_te_ldb"
       backend: LEVELDB
       batch_size: 100
     }
@@ -115,16 +115,62 @@ net_param {
     }
   }
   layers {
+    name: "relu2"
+    type: RELU
+    bottom: "ip2"
+    top: "ip2"
+  }
+  layers {
+    name: "ip3"
+    type: INNER_PRODUCT
+    bottom: "ip2"
+    top: "ip3"
+    blobs_lr: 1
+    blobs_lr: 2
+    inner_product_param {
+      num_output: 300
+      weight_filler {
+        type: "xavier"
+      }
+      bias_filler {
+        type: "constant"
+      }
+    }
+  }
+  layers {
+    name: "relu3"
+    type: RELU
+    bottom: "ip3"
+    top: "ip3"
+  }
+  layers {
+    name: "ip4"
+    type: INNER_PRODUCT
+    bottom: "ip3"
+    top: "ip4"
+    blobs_lr: 1
+    blobs_lr: 2
+    inner_product_param {
+      num_output: 10
+      weight_filler {
+        type: "xavier"
+      }
+      bias_filler {
+        type: "constant"
+      }
+    }
+  }
+  layers {
     name: "accuracy"
     type: ACCURACY
-    bottom: "ip2"
+    bottom: "ip4"
     bottom: "label"
     top: "accuracy"
   }
   layers {
     name: "loss"
     type: SOFTMAX_LOSS
-    bottom: "ip2"
+    bottom: "ip4"
     bottom: "label"
     top: "loss"
   }

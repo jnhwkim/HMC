@@ -16,19 +16,21 @@ te_label = '4S_te';
 save(strcat(tr_label,'.mat'), 'S_tr');
 save(strcat(te_label,'.mat'), 'S_te');
 
-% debug 
+%% debug 
 if false
-   a = reshape(S_tr(:,1:784)', [2 784/2 size(S_tr,1)]);
-   x = squeeze(a(1,1:196,:))'; y = squeeze(a(2,1:196,:))'; 
-   u = squeeze(a(1,197:end,:))'; v = squeeze(a(2,197:end,:))';
+   a = reshape(S_tr', [2 size(S_tr,2)/2 size(S_tr,1)]);
+   x = squeeze(a(1,1:size(S_tr,2)/4,:))'; y = squeeze(a(2,1:size(S_tr,2)/4,:))'; 
+   u = squeeze(a(1,size(S_tr,2)/4+1:end,:))'; v = squeeze(a(2,size(S_tr,2)/4+1:end,:))';
    %% Visualization
-%    close all;
-%    idx = 66;
-%    f = figure(1);
-%    set(f, 'Position', [0 300 300 300]);
-%    imshow(ones(28), 'InitialMagnification','fit');
-%    hold on;
-%    quiver(x(idx,:)*28,y(idx,:)*28,(u(idx,:)-0.5)*56,(v(idx,:)-0.5)*56,0);
+   close all;
+   times = 4;
+   idx = 5236;
+   f = figure(1);
+   set(f, 'Position', [0 300 300 300]);
+   imshow(1-reshape(X_tr(:,ceil(idx/times)),28,28)/5, 'InitialMagnification','fit');
+   hold on;
+   quiver(x(idx,:)*28,y(idx,:)*28,(u(idx,:)-0.5)*56,(v(idx,:)-0.5)*56,0);
+   y_tr(ceil(idx/times))
 end
 
 %% repeat sampling?
