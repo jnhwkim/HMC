@@ -9,9 +9,9 @@ set(0,'DefaultTextFontname', 'Palatino')
 
 %% Load a sample digit
 addpath('mnist');
-[X,y] = loadadigit('train',3);%round(rand(1)*100+1));
+[X,y] = loadadigit('train',1);%round(rand(1)*100+1));
 X = reshape(X, [28 28]);
-samples = 14;
+samples = 28^2/4/4; % 49
 
 %% Init with Zero.
 tic;

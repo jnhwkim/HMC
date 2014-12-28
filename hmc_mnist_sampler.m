@@ -79,7 +79,7 @@ while size(tr,1) < samples && count < samples * 10
             for i = 1 : size(q_trajectory,2)
                 q = q_trajectory(:,i);
                 f_size = 13;
-                f_mask = zeros(size(X,1)+f_size-1, size(X,2)+f_size-1);
+                f_mask = zeros(size(I,1)+f_size-1, size(I,2)+f_size-1);
                 offset = floor(f_size/2);
                 f_mask(q(2):q(2)+f_size-1,q(1):q(1)+f_size-1) = ...
                     fspecial('gaussian', [f_size f_size], 3);
@@ -100,7 +100,6 @@ while size(tr,1) < samples && count < samples * 10
         end
     end
 end
-count
 
 x = tr(1:end-1,1); y = tr(1:end-1,2);
 u = tr(2:end,1)-tr(1:end-1,1);

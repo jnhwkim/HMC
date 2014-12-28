@@ -10,10 +10,14 @@ S_te = hmc_mnist_bulk(X_te, 10000);
 y_tr = y_tr(1:60000);
 y_te = y_te(1:10000,:);
 
-save('S_tr.mat', 'S_tr');
-save('S_te.mat', 'S_te');
+tr_label = '4S_tr';
+te_label = '4S_te';
 
-if true
+save(strcat(tr_label,'.mat'), 'S_tr');
+save(strcat(te_label,'.mat'), 'S_te');
+
+% debug 
+if false
    a = reshape(S_tr(:,1:784)', [2 784/2 size(S_tr,1)]);
    x = squeeze(a(1,1:196,:))'; y = squeeze(a(2,1:196,:))'; 
    u = squeeze(a(1,197:end,:))'; v = squeeze(a(2,197:end,:))';
@@ -27,9 +31,12 @@ if true
 %    quiver(x(idx,:)*28,y(idx,:)*28,(u(idx,:)-0.5)*56,(v(idx,:)-0.5)*56,0);
 end
 
-export_leveldb(S_tr,y_tr,28,28*2,1,'S_tr');
-export_leveldb(S_te,y_te,28,28*2,1,'S_te');
+%% repeat sampling?
+y_tr_rep = repmat(y_tr,1,5)';
+y_te_rep = repmat(y_te,1,5)';
+y_tr = y_tr_rep(:);
+y_te = y_te_rep(:);
 
-%%
-export_leveldb(S_tr(:,1:784),y_tr,28,28,1,'S_tr');
-export_leveldb(S_te(:,1:784),y_tr,28,28,1,'S_te');
+%% export as leveldb
+export_leveldb(S_tr,y_tr,1,4*49,1,tr_label);
+export_leveldb(S_te,y_te,1,4*49,1,te_label);
