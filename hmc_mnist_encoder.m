@@ -34,8 +34,8 @@ if false
 end
 
 %% repeat sampling?
-y_tr_rep = repmat(y_tr,1,5)';
-y_te_rep = repmat(y_te,1,5)';
+y_tr_rep = repmat(y_tr,1,4)';
+y_te_rep = repmat(y_te,1,4)';
 y_tr = y_tr_rep(:);
 y_te = y_te_rep(:);
 
