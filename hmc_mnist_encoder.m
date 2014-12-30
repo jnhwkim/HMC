@@ -1,18 +1,19 @@
+%% Load MNIST data
 addpath('mnist');
 X_tr = loadMNISTImages('train-images-idx3-ubyte');
 X_te = loadMNISTImages('t10k-images-idx3-ubyte');
 y_tr = loadMNISTLabels('train-labels-idx1-ubyte');
 y_te = loadMNISTLabels('t10k-labels-idx1-ubyte');
  
+%% HMC sampling
 S_tr = hmc_mnist_bulk(X_tr, 60000);
 S_te = hmc_mnist_bulk(X_te, 10000);
 
-y_tr = y_tr(1:60000);
-y_te = y_te(1:10000,:);
-
+%% Set label names
 tr_label = '4S_tr';
 te_label = '4S_te';
 
+%% Save intermediate files
 save(strcat(tr_label,'.mat'), 'S_tr');
 save(strcat(te_label,'.mat'), 'S_te');
 
@@ -38,6 +39,8 @@ y_tr_rep = repmat(y_tr,1,4)';
 y_te_rep = repmat(y_te,1,4)';
 y_tr = y_tr_rep(:);
 y_te = y_te_rep(:);
+clear('y_tr_rep')
+clear('y_te_rep')
 
 %% export as leveldb
 export_leveldb(S_tr,y_tr,1,4*49,1,tr_label);
