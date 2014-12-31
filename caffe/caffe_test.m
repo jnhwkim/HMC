@@ -2,9 +2,12 @@
 addpath('/Users/Calvin/Github/caffe-master/matlab/caffe');
 
 %% initialization
+if caffe('is_initialized')
+    caffe('reset');
+end
 use_gpu = 1;
 model_def_file = 'hmc_deploy.prototxt';
-model_file = '.4s_ga_iter_100000.caffemodel';
+model_file = '.4s_ga_iter_10000000.caffemodel';
 matcaffe_init(use_gpu, model_def_file, model_file);
 
 %% load test data
