@@ -6,26 +6,29 @@ y_tr = loadMNISTLabels('train-labels-idx1-ubyte');
 y_te = loadMNISTLabels('t10k-labels-idx1-ubyte');
  
 %% HMC sampling
-S_tr = hmc_mnist_bulk(X_tr, 60000);
-S_te = hmc_mnist_bulk(X_te, 10000);
+resample = 8;
+coord = 4;
+samples = 49;
+S_tr = hmc_mnist_bulk(X_tr, 60000, resample);
+S_te = hmc_mnist_bulk(X_te, 10000, resample);
 
 %% Set label names
-tr_label = '4S_tr';
-te_label = '4S_te';
+tr_label = sprintf('%dS_tr', resample);
+te_label = sprintf('%dS_te', resample);
 
 %% Save intermediate files
-save(strcat(tr_label,'.mat'), 'S_tr');
-save(strcat(te_label,'.mat'), 'S_te');
+save(strcat('mat/',tr_label,'.mat'), 'S_tr');
+save(strcat('mat/',te_label,'.mat'), 'S_te');
 
 %% debug 
 if false
    a = reshape(S_tr', [2 size(S_tr,2)/2 size(S_tr,1)]);
-   x = squeeze(a(1,1:size(S_tr,2)/4,:))'; y = squeeze(a(2,1:size(S_tr,2)/4,:))'; 
-   u = squeeze(a(1,size(S_tr,2)/4+1:end,:))'; v = squeeze(a(2,size(S_tr,2)/4+1:end,:))';
+   x = squeeze(a(1,1:size(S_tr,2)/coord,:))'; y = squeeze(a(2,1:size(S_tr,2)/coord,:))'; 
+   u = squeeze(a(1,size(S_tr,2)/coord+1:end,:))'; v = squeeze(a(2,size(S_tr,2)/coord+1:end,:))';
    %% Visualization
    close all;
-   times = 4;
-   idx = 5236;
+   resample = 4;
+   idx = 1;
    f = figure(1);
    set(f, 'Position', [0 300 300 300]);
    imshow(1-reshape(X_tr(:,ceil(idx/times)),28,28)/5, 'InitialMagnification','fit');
@@ -35,13 +38,13 @@ if false
 end
 
 %% repeat sampling?
-y_tr_rep = repmat(y_tr,1,4)';
-y_te_rep = repmat(y_te,1,4)';
+y_tr_rep = repmat(y_tr,1,resample)';
+y_te_rep = repmat(y_te,1,resample)';
 y_tr = y_tr_rep(:);
 y_te = y_te_rep(:);
 clear('y_tr_rep')
 clear('y_te_rep')
 
 %% export as leveldb
-export_leveldb(S_tr,y_tr,1,4*49,1,tr_label);
-export_leveldb(S_te,y_te,1,4*49,1,te_label);
+export_leveldb(S_tr,y_tr,1,coord*samples,1,tr_label);
+export_leveldb(S_te,y_te,1,coord*samples,1,te_label);
