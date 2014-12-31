@@ -12,8 +12,8 @@ for k = 1 : min(size(X,2), limit)
         a = [x,y]';
         b = [u,v]';
         s = [a(:)'/28, (b(:)'+28)/56];
-        X_out(4*(k-1)+t,:) = zeros(1, 28^2/coord);
-        X_out(4*(k-1)+t,1:size(s,2)) = s;
+        X_out(resample*(k-1)+t,:) = zeros(1, 28^2/coord);
+        X_out(resample*(k-1)+t,1:size(s,2)) = s;
     end
     if mod(k, 1000) == 0
         fprintf('*');
