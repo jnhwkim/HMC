@@ -5,13 +5,14 @@ addpath('/Users/Calvin/Github/caffe-master/matlab/caffe');
 if caffe('is_initialized')
     caffe('reset');
 end
+resample = 8;
 use_gpu = 1;
-model_def_file = 'hmc_deploy.prototxt';
-model_file = '.4s_ga_iter_10000000.caffemodel';
+model_def_file = sprintf('hmc_deploy_%ds.prototxt',resample);
+model_file = sprintf('.%ds_ga_iter_10000000.caffemodel',resample);
 matcaffe_init(use_gpu, model_def_file, model_file);
 
 %% load test data
-load('../4S_te.mat');
+load(sprintf('../mat/%dS_te.mat',resample));
 
 %% Load MNIST data
 addpath('../mnist');
@@ -21,10 +22,9 @@ y_te = loadMNISTLabels('t10k-labels-idx1-ubyte');
 correct = 0;
 count = 0;
 for idx = 1 : 10000
-    samples = 4;
     X = zeros(size(S_te(1,:), 2), ...
-              size(S_te(1,:), 1), 1, samples);
-    X(:,1,1,:) = S_te(samples*(idx-1)+1:samples*(idx-1)+samples,:)';
+              size(S_te(1,:), 1), 1, resample);
+    X(:,1,1,:) = S_te(resample*(idx-1)+1:resample*(idx-1)+resample,:)';
     input_data = {single(X)};
 
     scores = caffe('forward', input_data);
