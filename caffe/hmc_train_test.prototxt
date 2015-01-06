@@ -5,7 +5,7 @@ layers {
   top: "data"
   top: "label"
   data_param {
-    source: "4S_tr_ldb"
+    source: "49s8r_tr_ldb"
     backend: LEVELDB
     batch_size: 60
   }
@@ -20,9 +20,9 @@ layers {
   top: "data"
   top: "label"
   data_param {
-    source: "4S_te_ldb"
+    source: "49s8r_te_ldb"
     backend: LEVELDB
-    batch_size: 100
+    batch_size: 80
   }
   transform_param {
     scale: 0.00390625
@@ -100,6 +100,7 @@ layers {
   bottom: "ip3"
   bottom: "label"
   top: "accuracy"
+  include: { phase: TEST }
 }
 layers {
   name: "loss"
