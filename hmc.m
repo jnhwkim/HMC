@@ -60,9 +60,9 @@ function [ H ] = hmc( U, grad_U, epsilon, L, current_q )
 
   % Evaluate potential and kinetic energies at start and end of trajectory
   current_U = U(current_q);
-  current_K = 0;
+  current_K = sum(current_p.^2) / 2;
   proposed_U = U(q);
-  proposed_K = 0;
+  proposed_K = sum(p.^2) / 2;
 
   % Accept or reject the state at end of trajectory, returning either
   % the position at the end of the trajectory or the initial position
