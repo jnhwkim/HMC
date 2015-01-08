@@ -29,16 +29,22 @@ if ~isequal(size(q), [2,1])
 end
 
 %% Define U and grad_U
-Coulomb_filter = zeros(size(I)*2+1);
-for i = 1 : size(Coulomb_filter,1)
-    for j = 1 : size(Coulomb_filter,2)
-        r = sqrt((size(I,1)+1-i)^2+(size(I,2)+1-j)^2);
-        if r ~= 0
-            Coulomb_filter(i,j) = 1/r;
+X1 = size(I);
+for i = 1 : size(I,1)
+    for j = 1 : size(I,2)
+        e = 0;
+        for m = 1 : size(I,1)
+            for n = 1 : size(I,2)
+                r = sqrt((m-i)^2+(n-j)^2);
+                if r ~= 0
+                    e = e + I(m,n)/r;
+                end 
+            end
         end
+        X1(i,j) = e;
     end
 end
-X1 = conv2(I, Coulomb_filter, 'same');
+
 X1 = K * (X1 + I / InfD);
 
 Uf = -(X1);
