@@ -6,20 +6,21 @@ y_tr = loadMNISTLabels('train-labels-idx1-ubyte');
 y_te = loadMNISTLabels('t10k-labels-idx1-ubyte');
  
 %% HMC sampling
-coord = 4;
+coord = 5;
 samples = 49;
 resample = 8;
+variation = 'z';
 
 %% Set label names
-tr_label = sprintf('%ds%dr_tr', samples, resample);
-te_label = sprintf('%ds%dr_te', samples, resample);
+tr_label = sprintf('%ds%dr%s_tr', samples, resample, variation);
+te_label = sprintf('%ds%dr%s_te', samples, resample, variation);
 
 %% Samplings and Save intermediate files
-S_tr = hmc_mnist_bulk(X_tr, 60000, samples, resample);
+S_tr = hmc_mnist_bulk(X_tr, 60000, samples, resample, coord);
 save(strcat('mat/',tr_label,'.mat'), 'S_tr');
 
 %% For Test
-S_te = hmc_mnist_bulk(X_te, 10000, samples, resample);
+S_te = hmc_mnist_bulk(X_te, 10000, samples, resample, coord);
 save(strcat('mat/',te_label,'.mat'), 'S_te');
 
 %% debug 

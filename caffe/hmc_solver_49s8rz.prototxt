@@ -14,7 +14,7 @@ test_interval: 100000
 max_iter: 10000000
 # snapshot intermediate results (100 epochs)
 snapshot: 100000
-snapshot_prefix: ".49s8r"
+snapshot_prefix: ".49s8rz"
 # Set a random_seed for repeatable results.
 # (For results that vary due to random initialization, comment out the below
 # line, or set to a negative integer -- e.g. "random_seed: -1")
@@ -39,7 +39,7 @@ net_param {
     top: "data"
     top: "label"
     data_param {
-      source: "49s8r_tr_ldb"
+      source: "49s8rz_tr_ldb"
       backend: LEVELDB
       batch_size: 480
     }
@@ -54,7 +54,7 @@ net_param {
     top: "data"
     top: "label"
     data_param {
-      source: "49s8r_te_ldb"
+      source: "49s8rz_te_ldb"
       backend: LEVELDB
       batch_size: 100
     }

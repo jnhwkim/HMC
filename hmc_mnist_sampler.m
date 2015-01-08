@@ -1,4 +1,4 @@
-function [ x,y,u,v,Uf,px,py ] = hmc_mnist_sampler( X, q, samples, mask )
+function [ x,y,u,v,z,Uf,px,py ] = hmc_mnist_sampler( X, q, samples, mask )
 %HMC_MNIST_SAMPLER Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -59,6 +59,7 @@ grad_U = @(q)...
         round(max(min(q(1),28),1)))];
 
 tr = [q'];
+z = [U(q)];
 count = 0;
 
 while size(tr,1) < samples && count < samples * 10
@@ -69,6 +70,7 @@ while size(tr,1) < samples && count < samples * 10
     if ~isequal(tr(end,:), q') && (1 == size(tr,1) || ...
         1 < size(tr,1) && ~isequal(tr(end-1,:), q'))
         tr = [tr; q'];
+        z = [z; U(q)];
         if mask
             % mask the middle of trajectory in addition to the destination.
             if 1 < size(tr,1)
@@ -104,6 +106,7 @@ end
 x = tr(1:end-1,1); y = tr(1:end-1,2);
 u = tr(2:end,1)-tr(1:end-1,1);
 v = tr(2:end,2)-tr(1:end-1,2);
+z = z(1:end-1);
 
 end
 

@@ -6,14 +6,17 @@ if caffe('is_initialized')
     caffe('reset');
 end
 samples = 49;
-resample = 28;
+resample = 8;
 use_gpu = 1;
-model_def_file = sprintf('hmc_deploy_%ds%dr_wide.prototxt',samples,resample);
-model_file = sprintf('.%ds%dr_wide_iter_10000000.caffemodel',samples,8);
+variation = 'z';
+model_def_file = sprintf('hmc_deploy_%ds%dr%s.prototxt', ...
+                    samples,resample,variation);
+model_file = sprintf('.%ds%dr%s_iter_10000000.caffemodel', ...
+                    samples,8,variation);
 matcaffe_init(use_gpu, model_def_file, model_file);
 
 %% load test data
-load(sprintf('../mat/%ds%dr_te.mat',samples,resample));
+load(sprintf('../mat/%ds%dr%s_te.mat',samples,resample,variation));
 
 %% Load MNIST data
 addpath('../mnist');

@@ -15,7 +15,7 @@ samples = 28^2/4/4; % 49
 
 %% Init with Zero.
 tic;
-[x,y,u,v,Uf,px,py] = hmc_mnist_sampler(X, [0;0], samples, false);
+[x,y,u,v,z,Uf,px,py] = hmc_mnist_sampler(X, [0;0], samples, false);
 toc;
 
 %% Display the result as 3 figures.
@@ -23,7 +23,7 @@ toc;
 
 %% Modified approach
 tic;
-[x,y,u,v,Uf,px,py] = hmc_mnist_sampler(X, 'max', samples, true);
+[x,y,u,v,z,Uf,px,py] = hmc_mnist_sampler(X, 'max', samples, true);
 toc;
 
 %% Display the result as 3 figures.
