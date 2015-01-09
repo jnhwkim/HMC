@@ -1,4 +1,4 @@
-function [ x,y,u,v,z,Uf,px,py ] = hmc_mnist_sampler( X, q, samples, mask )
+function [ x,y,u,v,z,Uf,px,py ] = hmc_mnist_sampler( X, q, samples, mask, filter )
 %HMC_MNIST_SAMPLER Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -29,16 +29,19 @@ if ~isequal(size(q), [2,1])
 end
 
 %% Define U and grad_U
-Coulomb_filter = zeros(size(I)*2+1);
-for i = 1 : size(Coulomb_filter,1)
-    for j = 1 : size(Coulomb_filter,2)
-        r = sqrt((size(I,1)+1-i)^2+(size(I,2)+1-j)^2);
-        if r ~= 0
-            Coulomb_filter(i,j) = 1/r;
+if nargin < 5
+    disp('Default: Coulomb filter.');
+    filter = zeros(size(I)*2+1);
+    for i = 1 : size(filter,1)
+        for j = 1 : size(filter,2)
+            r = sqrt((size(I,1)+1-i)^2+(size(I,2)+1-j)^2);
+            if r ~= 0
+                filter(i,j) = 1/r;
+            end
         end
     end
 end
-X1 = conv2(I, Coulomb_filter, 'same');
+X1 = conv2(I, filter, 'same');
 X1 = K * (X1 + I / InfD);
 
 Uf = -(X1);
