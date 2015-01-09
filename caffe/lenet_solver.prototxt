@@ -1,0 +1,174 @@
+# test_iter specifies how many forward passes the test should carry out.
+# In the case of MNIST, we have test batch size 100 and 100 test iterations,
+# covering the full 10,000 testing images.
+test_iter: 100
+# Carry out testing every 500 training iterations.
+test_interval: 1000
+# The base learning rate, momentum and the weight decay of the network.
+base_lr: 0.01
+momentum: 0.9
+weight_decay: 0.0005
+# The learning rate policy
+lr_policy: "inv"
+gamma: 0.0001
+power: 0.75
+# Display every 100 iterations
+display: 100
+# The maximum number of iterations
+max_iter: 10000
+# snapshot intermediate results
+snapshot: 5000
+snapshot_prefix: ".lenet64"
+# solver mode: CPU or GPU
+solver_mode: GPU
+
+# The net protocol buffer definition
+net_param {
+	name: "LeNet"
+	layers {
+	  name: "mnist"
+	  type: DATA
+	  top: "data"
+	  top: "label"
+	  data_param {
+	    source: "mnist_tr_ldb"
+	    backend: LEVELDB
+	    batch_size: 64
+	  }
+	  transform_param {
+	    scale: 0.00390625
+	  }
+	  include: { phase: TRAIN }
+	}
+	layers {
+	  name: "mnist"
+	  type: DATA
+	  top: "data"
+	  top: "label"
+	  data_param {
+	    source: "mnist_te_ldb"
+	    backend: LEVELDB
+	    batch_size: 100
+	  }
+	  transform_param {
+	    scale: 0.00390625
+	  }
+	  include: { phase: TEST }
+	}
+
+	layers {
+	  name: "conv1"
+	  type: CONVOLUTION
+	  bottom: "data"
+	  top: "conv1"
+	  blobs_lr: 1
+	  blobs_lr: 2
+	  convolution_param {
+	    num_output: 20
+	    kernel_size: 5
+	    stride: 1
+	    weight_filler {
+	      type: "xavier"
+	    }
+	    bias_filler {
+	      type: "constant"
+	    }
+	  }
+	}
+	layers {
+	  name: "pool1"
+	  type: POOLING
+	  bottom: "conv1"
+	  top: "pool1"
+	  pooling_param {
+	    pool: MAX
+	    kernel_size: 2
+	    stride: 2
+	  }
+	}
+	layers {
+	  name: "conv2"
+	  type: CONVOLUTION
+	  bottom: "pool1"
+	  top: "conv2"
+	  blobs_lr: 1
+	  blobs_lr: 2
+	  convolution_param {
+	    num_output: 50
+	    kernel_size: 5
+	    stride: 1
+	    weight_filler {
+	      type: "xavier"
+	    }
+	    bias_filler {
+	      type: "constant"
+	    }
+	  }
+	}
+	layers {
+	  name: "pool2"
+	  type: POOLING
+	  bottom: "conv2"
+	  top: "pool2"
+	  pooling_param {
+	    pool: MAX
+	    kernel_size: 2
+	    stride: 2
+	  }
+	}
+	layers {
+	  name: "ip1"
+	  type: INNER_PRODUCT
+	  bottom: "pool2"
+	  top: "ip1"
+	  blobs_lr: 1
+	  blobs_lr: 2
+	  inner_product_param {
+	    num_output: 500
+	    weight_filler {
+	      type: "xavier"
+	    }
+	    bias_filler {
+	      type: "constant"
+	    }
+	  }
+	}
+	layers {
+	  name: "relu1"
+	  type: RELU
+	  bottom: "ip1"
+	  top: "ip1"
+	}
+	layers {
+	  name: "ip2"
+	  type: INNER_PRODUCT
+	  bottom: "ip1"
+	  top: "ip2"
+	  blobs_lr: 1
+	  blobs_lr: 2
+	  inner_product_param {
+	    num_output: 10
+	    weight_filler {
+	      type: "xavier"
+	    }
+	    bias_filler {
+	      type: "constant"
+	    }
+	  }
+	}
+	layers {
+	  name: "accuracy"
+	  type: ACCURACY
+	  bottom: "ip2"
+	  bottom: "label"
+	  top: "accuracy"
+	  include: { phase: TEST }
+	}
+	layers {
+	  name: "loss"
+	  type: SOFTMAX_LOSS
+	  bottom: "ip2"
+	  bottom: "label"
+	  top: "loss"
+	}
+}
