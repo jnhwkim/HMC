@@ -30,16 +30,7 @@ end
 
 %% Define U and grad_U
 if nargin < 5
-    disp('Default: Coulomb filter.');
-    filter = zeros(size(I)*2+1);
-    for i = 1 : size(filter,1)
-        for j = 1 : size(filter,2)
-            r = sqrt((size(I,1)+1-i)^2+(size(I,2)+1-j)^2);
-            if r ~= 0
-                filter(i,j) = 1/r;
-            end
-        end
-    end
+    filter = coulomb_filter(size(I,1), size(I,2));
 end
 X1 = conv2(I, filter, 'same');
 X1 = K * (X1 + I / InfD);
