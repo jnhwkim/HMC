@@ -8,6 +8,7 @@ L = 25;
 K = .5;
 InfD = .1;
 I = reshape(X, [28 28]);
+jump = true;
 
 %% Initialize first gaze
 if ~isequal(size(q), [2,1])
@@ -50,7 +51,12 @@ tr = [q'];
 z = [U(q)];
 count = 0;
 
-while size(tr,1) < samples && count < samples * 10
+while size(tr,1) < samples && count < samples * 2
+    %% jump to the minima every quater.
+    if mask && jump && 0 == mod(size(tr, 1), floor(samples / 4 + 1))
+       [i, j] = find(Uf==min(min(Uf)));
+       q = [j, i]';
+    end
     q = hmc(U, grad_U, epsilon, L, q);
     q = [round(max(min(q(1),28),1)),...
         round(max(min(q(2),28),1))]';
@@ -61,7 +67,8 @@ while size(tr,1) < samples && count < samples * 10
         z = [z; U(q)];
         if mask
             % mask the middle of trajectory in addition to the destination.
-            if 1 < size(tr,1)
+            if 1 < size(tr,1) && ...
+                0 ~= mod(size(tr, 1)-1, floor(samples / 4 + 1))
                 q_trajectory = [tr(end,:)', round((tr(end-1,:)'+tr(end,:)')/2)]; 
             else
                 q_trajectory = [tr(end,:)'];
