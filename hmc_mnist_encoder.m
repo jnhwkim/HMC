@@ -16,11 +16,11 @@ tr_label = sprintf('%ds%dr%s_tr', samples, resample, variation);
 te_label = sprintf('%ds%dr%s_te', samples, resample, variation);
 
 %% Samplings and Save intermediate files
-S_tr = hmc_mnist_bulk(X_tr, 60000, samples, resample, coord, filters);
+S_tr = hmc_mnist_bulk(X_tr, 60000, samples, resample, coord);
 save(strcat('mat/',tr_label,'.mat'), 'S_tr');
 
 %% For Test
-S_te = hmc_mnist_bulk(X_te, 10000, samples, resample, coord, filters);
+S_te = hmc_mnist_bulk(X_te, 10000, samples, resample, coord);
 save(strcat('mat/',te_label,'.mat'), 'S_te');
 
 %% debug 
