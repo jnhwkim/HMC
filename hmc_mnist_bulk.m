@@ -4,6 +4,10 @@ function [ X_out ] = hmc_mnist_bulk( X, limit, samples, resample, coord, filters
 
 height = 28;
 width = 28;
+if nargin < 6
+    filters = zeros(height*2+1, width*2+1, 1, 1);
+    filters(:,:,1,1) = coulomb_filter(height, width);
+end    
 X_out = zeros(min(size(X,2), limit)*resample, samples*coord*size(filters, 4));
 tic;
 for k = 1 : min(size(X,2), limit)
