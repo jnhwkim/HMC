@@ -82,9 +82,11 @@ while size(tr,1) < samples && count < samples * 2
                     fspecial('gaussian', [f_size f_size], 3);
                 f_mask = f_mask(offset+1:end-offset,offset+1:end-offset);
                 % Update the field.
-                minima = min(min(Uf));
-                fraction = (sum(sum(Uf)) + minima) / sum(sum(Uf));
-                Uf = Uf * fraction - minima * f_mask;
+                Z = sum(sum(Uf));
+                d = Uf .* f_mask;
+                D = sum(sum(d));
+                fraction = (Z + D) / Z;
+                Uf = Uf * fraction - d;
                 [px,py] = gradient(Uf);
                 U = @(q) Uf(round(max(min(q(2),28),1)),...
                     round(max(min(q(1),28),1)));
