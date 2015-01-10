@@ -1,0 +1,196 @@
+# The base learning rate, momentum and the weight decay of the network.
+base_lr: 0.01
+momentum: 0.9
+weight_decay: 0.0005
+# The learning rate policy
+lr_policy: "inv"
+gamma: 0.0001
+power: 0.75
+# Display every 10 epochs
+display: 10000
+# Carry out testing every 100 training epochs.
+test_interval: 100000
+# The maximum number of iterations (10000 epochs)
+max_iter: 10000000
+# snapshot intermediate results (100 epochs)
+snapshot: 100000
+snapshot_prefix: ".49s8rzw"
+# Set a random_seed for repeatable results.
+# (For results that vary due to random initialization, comment out the below
+# line, or set to a negative integer -- e.g. "random_seed: -1")
+random_seed: 1710
+# solver mode: CPU or GPU
+solver_mode: GPU
+
+# We test on both the test and train set using "stages".  The TEST DATA layers
+# each have a stage, either 'test-on-train-set' or 'test-on-test-set'.
+# test_iter specifies how many forward passes the test should carry out.
+# In the case of MNIST, we have test batch size 100 and 100 test iterations,
+# covering the full 10,000 testing images.
+test_iter: 800
+test_state: { stage: "test-on-test-set" }
+
+# The net protocol buffer definition
+net_param {
+  name: "LeNet"
+  layers {
+    name: "mnist"
+    type: DATA
+    top: "data"
+    top: "label"
+    data_param {
+      source: "49s8rz_tr_ldb"
+      backend: LEVELDB
+      batch_size: 480
+    }
+    transform_param {
+      scale: 0.00390625
+    }
+    include: { phase: TRAIN }
+  }
+  layers {
+    name: "mnist"
+    type: DATA
+    top: "data"
+    top: "label"
+    data_param {
+      source: "49s8rz_te_ldb"
+      backend: LEVELDB
+      batch_size: 100
+    }
+    transform_param {
+      scale: 0.00390625
+    }
+    include: {
+      phase: TEST
+    }
+  }
+  layers {
+    name: "ip1"
+    type: INNER_PRODUCT
+    bottom: "data"
+    top: "ip1"
+    blobs_lr: 1
+    blobs_lr: 2
+    inner_product_param {
+      num_output: 800
+      weight_filler {
+        type: "xavier"
+      }
+      bias_filler {
+        type: "constant"
+      }
+    }
+  }
+  layers {
+    name: "relu1"
+    type: RELU
+    bottom: "ip1"
+    top: "ip1"
+  }
+  layers {
+    name: "ip2"
+    type: INNER_PRODUCT
+    bottom: "ip1"
+    top: "ip2"
+    blobs_lr: 1
+    blobs_lr: 2
+    inner_product_param {
+      num_output: 500
+      weight_filler {
+        type: "xavier"
+      }
+      bias_filler {
+        type: "constant"
+      }
+    }
+  }
+  layers {
+    name: "relu2"
+    type: RELU
+    bottom: "ip2"
+    top: "ip2"
+  }
+  layers {
+    name: "ip3"
+    type: INNER_PRODUCT
+    bottom: "ip2"
+    top: "ip3"
+    blobs_lr: 1
+    blobs_lr: 2
+    inner_product_param {
+      num_output: 10
+      weight_filler {
+        type: "xavier"
+      }
+      bias_filler {
+        type: "constant"
+      }
+    }
+  }
+  layers {
+    name: "accuracy"
+    type: ACCURACY
+    bottom: "ip3"
+    bottom: "label"
+    top: "accuracy"
+  }
+  layers {
+    name: "loss"
+    type: SOFTMAX_LOSS
+    bottom: "ip3"
+    bottom: "label"
+    top: "loss"
+  }
+}
+
+# Expected results for first and last 500 iterations:
+# (with portions of log omitted for brevity)
+#
+# Iteration 0, Testing net (#0)
+# Test score #0: 0.067
+# Test score #1: 2.30256
+# Iteration 0, Testing net (#1)
+# Test score #0: 0.0670334
+# Test score #1: 2.30258
+# Iteration 100, lr = 0.00992565
+# Iteration 100, loss = 0.280585
+# Iteration 200, lr = 0.00985258
+# Iteration 200, loss = 0.345601
+# Iteration 300, lr = 0.00978075
+# Iteration 300, loss = 0.172217
+# Iteration 400, lr = 0.00971013
+# Iteration 400, loss = 0.261836
+# Iteration 500, lr = 0.00964069
+# Iteration 500, loss = 0.157803
+# Iteration 500, Testing net (#0)
+# Test score #0: 0.968
+# Test score #1: 0.0993772
+# Iteration 500, Testing net (#1)
+# Test score #0: 0.965883
+# Test score #1: 0.109374
+#
+# [...]
+#
+# Iteration 9500, Testing net (#0)
+# Test score #0: 0.9899
+# Test score #1: 0.0308299
+# Iteration 9500, Testing net (#1)
+# Test score #0: 0.996816
+# Test score #1: 0.0118238
+# Iteration 9600, lr = 0.00603682
+# Iteration 9600, loss = 0.0126215
+# Iteration 9700, lr = 0.00601382
+# Iteration 9700, loss = 0.00579304
+# Iteration 9800, lr = 0.00599102
+# Iteration 9800, loss = 0.00500633
+# Iteration 9900, lr = 0.00596843
+# Iteration 9900, loss = 0.00796607
+# Iteration 10000, lr = 0.00594604
+# Iteration 10000, loss = 0.00271736
+# Iteration 10000, Testing net (#0)
+# Test score #0: 0.9914
+# Test score #1: 0.0276671
+# Iteration 10000, Testing net (#1)
+# Test score #0: 0.997782
+# Test score #1: 0.00908085
