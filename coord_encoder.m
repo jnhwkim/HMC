@@ -7,13 +7,13 @@ y_te = loadMNISTLabels('t10k-labels-idx1-ubyte');
 
 %% Variables
 samples = size(X_tr,2)/4;
-coord = 3;
+coord = 5;
 height = 28;
 width = 28;
 
 %% Set label names
-tr_label = sprintf('%dc_tr', samples);
-te_label = sprintf('%dc_te', samples);
+tr_label = sprintf('%ds%dc_tr', samples, coord);
+te_label = sprintf('%ds%dc_te', samples, coord);
 
 %% Sampling
 S_tr = coord_sampler(X_tr, height, width, samples);

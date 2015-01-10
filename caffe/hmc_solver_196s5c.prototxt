@@ -14,7 +14,7 @@ test_interval: 100000
 max_iter: 10000000
 # snapshot intermediate results (100 epochs)
 snapshot: 100000
-snapshot_prefix: ".196c"
+snapshot_prefix: ".196s5c"
 # Set a random_seed for repeatable results.
 # (For results that vary due to random initialization, comment out the below
 # line, or set to a negative integer -- e.g. "random_seed: -1")
@@ -32,14 +32,14 @@ test_state: { stage: "test-on-test-set" }
 
 # The net protocol buffer definition
 net_param {
-  name: "LeNet"
+  name: "Coord"
   layers {
     name: "mnist"
     type: DATA
     top: "data"
     top: "label"
     data_param {
-      source: "196c_tr_ldb"
+      source: "196s5c_tr_ldb"
       backend: LEVELDB
       batch_size: 60
     }
@@ -54,7 +54,7 @@ net_param {
     top: "data"
     top: "label"
     data_param {
-      source: "196c_te_ldb"
+      source: "196s5c_te_ldb"
       backend: LEVELDB
       batch_size: 100
     }
