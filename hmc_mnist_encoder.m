@@ -1,3 +1,6 @@
+%% Sampling for only test
+onlytest = false;
+
 %% Load MNIST data
 addpath('mnist');
 X_tr = loadMNISTImages('train-images-idx3-ubyte');
@@ -8,16 +11,18 @@ y_te = loadMNISTLabels('t10k-labels-idx1-ubyte');
 %% HMC sampling
 coord = 5;
 samples = 49;
-resample = 1;
-variation = 'f';
+resample = 8;
+variation = 'zjm';
 
 %% Set label names
 tr_label = sprintf('%ds%dr%s_tr', samples, resample, variation);
 te_label = sprintf('%ds%dr%s_te', samples, resample, variation);
 
 %% Samplings and Save intermediate files
-S_tr = hmc_mnist_bulk(X_tr, 60000, samples, resample, coord);
-save(strcat('mat/',tr_label,'.mat'), 'S_tr');
+if ~onlytest
+    S_tr = hmc_mnist_bulk(X_tr, 60000, samples, resample, coord);
+    save(strcat('mat/',tr_label,'.mat'), 'S_tr');
+end
 
 %% For Test
 S_te = hmc_mnist_bulk(X_te, 10000, samples, resample, coord);
@@ -40,14 +45,16 @@ if false
    y_tr(ceil(idx/times))
 end
 
-%% repeat sampling?
-y_tr_rep = repmat(y_tr,1,resample)';
-y_te_rep = repmat(y_te,1,resample)';
-y_tr = y_tr_rep(:);
-y_te = y_te_rep(:);
-clear('y_tr_rep')
-clear('y_te_rep')
+if ~onlytest
+    %% repeat sampling?
+    y_tr_rep = repmat(y_tr,1,resample)';
+    y_te_rep = repmat(y_te,1,resample)';
+    y_tr = y_tr_rep(:);
+    y_te = y_te_rep(:);
+    clear('y_tr_rep')
+    clear('y_te_rep')
 
-%% export as leveldb
-export_leveldb(S_tr,y_tr,1,coord*samples,1,tr_label);
-export_leveldb(S_te,y_te,1,coord*samples,1,te_label);
+    %% export as leveldb
+    export_leveldb(S_tr,y_tr,1,coord*samples,1,tr_label);
+    export_leveldb(S_te,y_te,1,coord*samples,1,te_label);
+end
