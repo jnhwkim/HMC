@@ -14,12 +14,30 @@ for k = 1 : min(size(X,2), limit)
     for t = 1 : resample
         for j = 1 : size(filters, 4)
             filter = squeeze(filters(:,:,1,j));
-            [x,y,u,v,z] = hmc_mnist_sampler(X(:,k),'max',samples+1,true,filter);
+            retry = 3;
+            while 0 < retry
+                [x,y,u,v,z] = hmc_mnist_sampler(X(:,k),'max',samples+1,true,filter);
+                if samples * 0.9 < size(x,1)
+                    break;
+                else
+                    retry = retry - 1;
+                end
+            end
             a = [x/width,y/height]';
             b = [(u+width)/2/width,(v+height)/2/height]';
             %c = X((x-1)*height+y,k);
-            s = [a(:)', b(:)', ((z-max(z))/min(z-max(z)))'];
-            X_out(resample*(k-1)+t,(j-1)*samples*coord+1:(j-1)*samples*coord+size(s,2)) = s;
+            s1 = a(:)';
+            s2 = b(:)';
+            s3 = ((z-max(z))/min(z-max(z)))';
+            X_out(resample*(k-1)+t,...
+                (j-1)*samples*coord+1:...
+                (j-1)*samples*coord+size(s1,2)) = s1;
+            X_out(resample*(k-1)+t,...
+                (j-1)*samples*coord+samples*2+1:...
+                (j-1)*samples*coord+samples*2+size(s2,2)) = s2;
+            X_out(resample*(k-1)+t,...
+                (j-1)*samples*coord+samples*4+1:...
+                (j-1)*samples*coord+samples*4+size(s3,2)) = s3;
         end
     end
     if mod(k, 1000) == 0
