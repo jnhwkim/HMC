@@ -2,13 +2,20 @@ function [ x,y,u,v,z,Uf,px,py ] = hmc_mnist_sampler( X, q, samples, mask, filter
 %HMC_MNIST_SAMPLER Summary of this function goes here
 %   Detailed explanation goes here
 
-% Hamilton Monte carlo sampling parameters
+%% Debug messages?
+DEBUG = false;
+
+%% Hamilton Monte carlo sampling parameters
 epsilon = .25;
 L = 25;
 K = .5;
 InfD = .1;
 I = reshape(X, [28 28]);
+
+%% Jump parameters
 jump = true;
+lookback_step = 5;
+dq_threshold = 10;
 
 %% Initialize first gaze
 if ~isequal(size(q), [2,1])
@@ -51,11 +58,17 @@ tr = [q'];
 z = [U(q)];
 count = 0;
 
-while size(tr,1) < samples && count < samples * 2
+while size(tr,1) < samples+1 && count < samples * 5
     %% jump to the minima every quater.
-    if mask && jump && 0 == mod(size(tr, 1), floor(samples / 4 + 1))
-       [i, j] = find(Uf==min(min(Uf)));
-       q = [j, i]';
+    if mask && jump && lookback_step < size(tr,1)
+        dq = tr(end-lookback_step+1:end,:)-tr(end-lookback_step:end-1,:);
+        if sum(var(dq)) < dq_threshold
+            if DEBUG 
+                fprintf('jump! %.2f\n', sum(var(dq)));
+            end
+            [i, j] = find(Uf==min(min(Uf)));
+            q = [j, i]';
+        end
     end
     q = hmc(U, grad_U, epsilon, L, q);
     q = [round(max(min(q(1),28),1)),...
@@ -75,12 +88,7 @@ while size(tr,1) < samples && count < samples * 2
             end
             for i = 1 : size(q_trajectory,2)
                 q = q_trajectory(:,i);
-                f_size = 13;
-                f_mask = zeros(size(I,1)+f_size-1, size(I,2)+f_size-1);
-                offset = floor(f_size/2);
-                f_mask(q(2):q(2)+f_size-1,q(1):q(1)+f_size-1) = ...
-                    fspecial('gaussian', [f_size f_size], 3);
-                f_mask = f_mask(offset+1:end-offset,offset+1:end-offset);
+                f_mask = hmc_mask(q,size(I),13,3);
                 % Update the field.
                 Z = sum(sum(Uf));
                 d = Uf .* f_mask;
@@ -104,6 +112,10 @@ x = tr(1:end-1,1); y = tr(1:end-1,2);
 u = tr(2:end,1)-tr(1:end-1,1);
 v = tr(2:end,2)-tr(1:end-1,2);
 z = z(1:end-1);
+
+if DEBUG && size(x,1) < samples
+    fprintf('Less sampled %d/%d\n', size(x,1), samples);
+end
 
 end
 
