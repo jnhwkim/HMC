@@ -16,7 +16,7 @@ for k = 1 : min(size(X,2), limit)
             filter = squeeze(filters(:,:,1,j));
             retry = 3;
             while 0 < retry
-                [x,y,u,v,z] = hmc_mnist_sampler(X(:,k),'max',samples+1,true,filter);
+                [x,y,u,v,z] = hmc_mnist_sampler(X(:,k),'max',samples,true,filter);
                 if samples * 0.9 < size(x,1)
                     break;
                 else
