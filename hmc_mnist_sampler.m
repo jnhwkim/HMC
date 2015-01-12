@@ -11,18 +11,12 @@ L = 25;
 K = .5;
 InfD = .1;
 I = reshape(X, [28 28]);
-
-%% Jump parameters
 jump = true;
-lookback_step = 5;
-dq_threshold = 10;
 
 %% Initialize first gaze
 if ~isequal(size(q), [2,1])
     if strcmp(q, 'max')
-        f_size = 7;
-        f_mask = fspecial('gaussian', [f_size f_size], 0.5) - ...
-                 ones(f_size,f_size) / f_size^2;
+        f_mask = -fspecial('log', 7, 1);
         X0 = conv2(I, f_mask, 'same');
         %f0 = figure(4);
         %set(f0, 'Position', [300 0 300 300]);
@@ -61,17 +55,13 @@ count = 0;
 
 while size(tr,1) < samples+1 && count < samples * 5
     %% jump to the minima every quater.
-    if mask && jump && lookback_step < size(tr,1)
-        dq = tr(end-lookback_step+1:end,:)-tr(end-lookback_step:end-1,:);
-        if sum(var(dq)) < dq_threshold && ...
-           (size(jmp,1) == 0 || jmp(size(jmp,1)) + lookback_step < size(tr,1))
-            [i, j] = find(Uf==min(min(Uf)));
-            q = [j, i]';
-            jmp = [jmp; size(tr,1)];
-            if DEBUG 
-                fprintf('jump to %d,%d (%.2f) at %d\n', ...
-                    q(1),q(2),sum(var(dq)),size(tr,1));
-            end
+    if mask && jump && 0 == mod(size(tr, 1), floor(samples / 4 + 1))
+        [i, j] = find(Uf==min(min(Uf)));
+        q = [j, i]';
+        jmp = [jmp; size(tr,1)];
+        if DEBUG 
+            fprintf('jump to %d,%d at %d\n', ...
+                q(1),q(2),size(tr,1));
         end
     end
     q = hmc(U, grad_U, epsilon, L, q);
@@ -95,10 +85,9 @@ while size(tr,1) < samples+1 && count < samples * 5
                 f_mask = hmc_mask(q,size(I),13,3);
                 % Update the field.
                 Z = sum(sum(Uf));
-                d = Uf .* f_mask;
-                D = sum(sum(d));
-                fraction = (Z + D) / Z;
-                Uf = Uf * fraction - d;
+                minima = min(min(Uf));
+                fraction = (Z + minima) / Z;
+                Uf = Uf * fraction - minima * f_mask;
                 [px,py] = gradient(Uf);
                 U = @(q) Uf(round(max(min(q(2),28),1)),...
                     round(max(min(q(1),28),1)));

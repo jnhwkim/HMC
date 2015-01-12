@@ -19,11 +19,11 @@ end
 coord = 5;
 samples = 49;
 resample = 8;
-variation = 'zmj';
+variation = 'zo';
 
 %% Set label names
-tr_label = sprintf('%ds%dr%s_tr%d', samples, resample, variation, half)
-te_label = sprintf('%ds%dr%s_te', samples, resample, variation)
+tr_label = sprintf('%ds%dr%s_tr%d', samples, resample, variation, half);
+te_label = sprintf('%ds%dr%s_te', samples, resample, variation);
 
 %% Samplings and Save intermediate files
 S_tr = hmc_mnist_bulk(X_tr, 60000, samples, resample, coord);
