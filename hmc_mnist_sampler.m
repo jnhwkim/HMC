@@ -56,18 +56,22 @@ grad_U = @(q)...
 
 tr = [q'];
 z = [U(q)];
+jmp = [];
 count = 0;
 
 while size(tr,1) < samples+1 && count < samples * 5
     %% jump to the minima every quater.
     if mask && jump && lookback_step < size(tr,1)
         dq = tr(end-lookback_step+1:end,:)-tr(end-lookback_step:end-1,:);
-        if sum(var(dq)) < dq_threshold
-            if DEBUG 
-                fprintf('jump! %.2f\n', sum(var(dq)));
-            end
+        if sum(var(dq)) < dq_threshold && ...
+           (size(jmp,1) == 0 || jmp(size(jmp,1)) + lookback_step < size(tr,1))
             [i, j] = find(Uf==min(min(Uf)));
             q = [j, i]';
+            jmp = [jmp; size(tr,1)];
+            if DEBUG 
+                fprintf('jump to %d,%d (%.2f) at %d\n', ...
+                    q(1),q(2),sum(var(dq)),size(tr,1));
+            end
         end
     end
     q = hmc(U, grad_U, epsilon, L, q);
@@ -111,6 +115,7 @@ end
 x = tr(1:end-1,1); y = tr(1:end-1,2);
 u = tr(2:end,1)-tr(1:end-1,1);
 v = tr(2:end,2)-tr(1:end-1,2);
+u(jmp) = 0; v(jmp) = 0;
 z = z(1:end-1);
 
 if DEBUG && size(x,1) < samples
